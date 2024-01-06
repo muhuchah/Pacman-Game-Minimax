@@ -71,8 +71,10 @@ class AIAgent(MultiAgentSearchAgent):
         actions = state.getLegalActions(self.index)
         v = -INF
         for action in actions:
-            if self.min_value(state.generateSuccessor(self.index, action), self.depth - 1) > v:
+            new_v = self.min_value(state.generateSuccessor(self.index, action), self.depth - 1)
+            if new_v > v:
                 best_action = action
+                v = new_v
 
         return best_action
             
@@ -93,11 +95,11 @@ class AIAgent(MultiAgentSearchAgent):
         if state.isLose() or state.isWin() or depth == 0:
             return self.evaluationFunction(state)
         
-        actions = state.getLegalActions(self.index)
+        actions = state.getLegalActions(1)
         v = INF
         for action in actions:
-            g = state.generateSuccessor(self.index, action)
-            v = max(v, self.max_value(g, depth-1))
+            g = state.generateSuccessor(1, action)
+            v = min(v, self.max_value(g, depth-1))
             
         return v
         
