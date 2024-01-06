@@ -37,9 +37,9 @@ class MultiAgentSearchAgent(Agent):
         self.depth = int(depth)
         self.time_limit = int(time_limit)
 
-
+INF = 1e9
 class AIAgent(MultiAgentSearchAgent):
-    def getAction(self, gameState: GameState):
+    def getAction(self, state: GameState):
         """
         Here are some method calls that might be useful when implementing minimax.
 
@@ -62,3 +62,42 @@ class AIAgent(MultiAgentSearchAgent):
 
         # TODO: Your code goes here
         # util.raiseNotDefined()
+
+        # actions = gameState.getLegalActions(0)
+        # print(actions)
+        # action = random.randint(0, len(actions)-1)
+        # return actions[action]
+
+        actions = state.getLegalActions(self.index)
+        v = -INF
+        for action in actions:
+            if self.min_value(state.generateSuccessor(self.index, action), self.depth - 1) > v:
+                best_action = action
+
+        return best_action
+            
+
+    def max_value(self, state, depth):
+        if state.isLose() or state.isWin() or depth == 0:
+            return self.evaluationFunction(state)
+        
+        actions = state.getLegalActions(self.index)
+        v = -INF
+        for action in actions:
+            g = state.generateSuccessor(self.index, action)
+            v = max(v, self.min_value(g, depth-1))
+
+        return v
+
+    def min_value(self, state, depth):
+        if state.isLose() or state.isWin() or depth == 0:
+            return self.evaluationFunction(state)
+        
+        actions = state.getLegalActions(self.index)
+        v = INF
+        for action in actions:
+            g = state.generateSuccessor(self.index, action)
+            v = max(v, self.max_value(g, depth-1))
+            
+        return v
+        
