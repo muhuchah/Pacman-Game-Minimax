@@ -15,10 +15,12 @@
 from util import manhattanDistance
 from game import Directions
 import random, util
+import numpy as np
 
 from game import Agent
 from pacman import GameState
 
+mapp = np.zeros([20, 20], dtype = int)
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
@@ -27,7 +29,10 @@ def scoreEvaluationFunction(currentGameState: GameState):
 
     This evaluation function is meant for use with adversarial search agents
     """
-    return currentGameState.getScore()
+
+    x, y = currentGameState.getPacmanPosition()
+    
+    return currentGameState.getScore() + mapp[x, y]
 
 
 class MultiAgentSearchAgent(Agent):
@@ -70,16 +75,18 @@ class AIAgent(MultiAgentSearchAgent):
         # action = random.randint(0, len(actions)-1)
         # return actions[action]
 
+        x, y = state.getPacmanPosition()
+        mapp[x, y] -= 1
+
         actions = state.getLegalActions(self.index)
         v = -INF
         for action in actions:
             new_v = self.min_value(state.generateSuccessor(self.index, action), self.depth - 1, self.alpha, self.beta)
-            if new_v > v:
+            if new_v >= v:
                 best_action = action
                 v = new_v
 
 
-        print(best_action)
         return best_action
             
 
