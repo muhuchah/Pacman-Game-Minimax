@@ -32,7 +32,7 @@ def scoreEvaluationFunction(currentGameState: GameState):
 
     x, y = currentGameState.getPacmanPosition()
     
-    return currentGameState.getScore() + mapp[x, y]
+    return currentGameState.getScore()
 
 
 class MultiAgentSearchAgent(Agent):
@@ -78,10 +78,12 @@ class AIAgent(MultiAgentSearchAgent):
         x, y = state.getPacmanPosition()
         mapp[x, y] -= 1
 
+
+        ghosts_number = state.getNumAgents() - 1;
         actions = state.getLegalActions(self.index)
         v = -INF
         for action in actions:
-            new_v = self.min_value(state.generateSuccessor(self.index, action), self.depth - 1, self.alpha, self.beta)
+            new_v = self.min_value(state.generateSuccessor(self.index, action), self.depth - 1, self.alpha, self.beta, 1, ghosts_number)
             if new_v >= v:
                 best_action = action
                 v = new_v
@@ -90,7 +92,7 @@ class AIAgent(MultiAgentSearchAgent):
         return best_action
             
 
-    def max_value(self, state, depth, alpha, beta):
+    def max_value(self, state, depth, alpha, beta, ghosts_number):
         if state.isLose() or state.isWin() or depth == 0:
             return self.evaluationFunction(state)
         
@@ -98,22 +100,25 @@ class AIAgent(MultiAgentSearchAgent):
         v = -INF
         for action in actions:
             g = state.generateSuccessor(self.index, action)
-            v = max(v, self.min_value(g, depth-1, alpha, beta))
+            v = max(v, self.min_value(g, depth-1, alpha, beta, 1, ghosts_number))
             if v >= beta:
                 return v
             alpha = max(v, alpha)
 
         return v
 
-    def min_value(self, state, depth, alpha, beta):
+    def min_value(self, state, depth, alpha, beta, index, ghosts_number):
         if state.isLose() or state.isWin() or depth == 0:
             return self.evaluationFunction(state)
         
-        actions = state.getLegalActions(1)
+        actions = state.getLegalActions(index)
         v = INF
         for action in actions:
-            g = state.generateSuccessor(1, action)
-            v = min(v, self.max_value(g, depth-1, alpha, beta))
+            g = state.generateSuccessor(index, action)
+            if index == ghosts_number:
+                v = min(v, self.max_value(g, depth-1, alpha, beta, ghosts_number))
+            else:
+                v = min(v, self.min_value(g, depth-1, alpha, beta, index+1, ghosts_number))
             if v <= alpha:
                 return v
             beta = min(v, beta)           
