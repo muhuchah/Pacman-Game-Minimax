@@ -20,7 +20,7 @@ import numpy as np
 from game import Agent
 from pacman import GameState
 
-mapp = np.zeros([20, 20], dtype = int)
+mapp = np.zeros([20, 20], dtype = float)
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
@@ -32,7 +32,7 @@ def scoreEvaluationFunction(currentGameState: GameState):
 
     x, y = currentGameState.getPacmanPosition()
     
-    return currentGameState.getScore()
+    return currentGameState.getScore() + mapp[x, y]
 
 
 class MultiAgentSearchAgent(Agent):
@@ -76,7 +76,7 @@ class AIAgent(MultiAgentSearchAgent):
         # return actions[action]
 
         x, y = state.getPacmanPosition()
-        mapp[x, y] -= 1
+        mapp[x, y] -= 0.001
 
 
         ghosts_number = state.getNumAgents() - 1;
