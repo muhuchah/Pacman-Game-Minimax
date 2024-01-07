@@ -92,6 +92,8 @@ class AIAgent(MultiAgentSearchAgent):
             elif new_v == v:
                 best_actions.append(action)
 
+        if len(best_actions) > 1 and "Stop" in best_actions:
+            best_actions.remove("Stop")
 
         return random.choice(best_actions)
             
