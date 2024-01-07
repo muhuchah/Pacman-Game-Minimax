@@ -81,15 +81,19 @@ class AIAgent(MultiAgentSearchAgent):
 
         ghosts_number = state.getNumAgents() - 1;
         actions = state.getLegalActions(self.index)
+        best_actions = []
         v = -INF
         for action in actions:
             new_v = self.min_value(state.generateSuccessor(self.index, action), self.depth - 1, self.alpha, self.beta, 1, ghosts_number)
-            if new_v >= v:
-                best_action = action
+            if new_v > v:
+                best_actions.clear()
+                best_actions.append(action)
                 v = new_v
+            elif new_v == v:
+                best_actions.append(action)
 
 
-        return best_action
+        return random.choice(best_actions)
             
 
     def max_value(self, state, depth, alpha, beta, ghosts_number):
